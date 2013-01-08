@@ -1,4 +1,4 @@
 .DS_Store
 *~
 *.swp
-src/count.js
+src/*.js
