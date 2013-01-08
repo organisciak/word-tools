@@ -1,3 +1,10 @@
+###
+Non-Modal Dialog
+
+This is a simple non-modal dialog. It is injected as a content script and
+listens for sendMessage from elsewhere in the script.
+###
+
 dialog = (text) ->
 	div = document.createElement 'div'
 	div.style.width = "200px"
@@ -31,3 +38,9 @@ dialog = (text) ->
 # When a message is send, show dialog
 chrome.extension.onMessage.addListener (request, sender, sendResponse) =>
 	dialog request.message
+	
+# Leave a little DOM marker to identify that we've been loaded
+if document.getElementById("word-count-porganized") is null
+	mark = document.createElement("div")
+	mark.id = "word-count-porganized"
+	document.body.appendChild mark

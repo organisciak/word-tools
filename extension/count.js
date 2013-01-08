@@ -2,36 +2,33 @@
 (function() {
   var getWordCount, simpleTokenizer;
 
-  window.initiated = false;
-
   getWordCount = function(e, t, tokenizer) {
-    var msg, text, words,
-      _this = this;
+    var _this = this;
     if (tokenizer == null) {
       tokenizer = simpleTokenizer;
     }
-    text = e.selectionText;
-    words = tokenizer(text);
-    if (text.length === 0) {
-      msg = "No words selected";
-    } else {
-      msg = "" + words + " word" + (words > 1 ? 's' : '') + " selected";
-    }
-    if (window.initiated === !true) {
-      chrome.tabs.executeScript(t.id, {
-        file: "dialog.js"
-      }, function(e) {
-        window.initiated = true;
+    chrome.tabs.executeScript(t.id, {
+      code: 'chrome.extension.sendMessage({ loaded: document.getElementById(\'word-count-porganized\')!==null });'
+    });
+    chrome.extension.onMessage.addListener(function(req, sender, sendResponse) {
+      var msg, text, words;
+      text = e.selectionText;
+      words = tokenizer(text);
+      msg = "" + (text.length === 0 ? 'No' : words) + " word" + (words !== 1 ? 's' : '') + " selected";
+      if (req.loaded === false) {
+        chrome.tabs.executeScript(t.id, {
+          file: "dialog.js"
+        }, function() {
+          return chrome.tabs.sendMessage(t.id, {
+            message: msg
+          });
+        });
+      } else {
         chrome.tabs.sendMessage(t.id, {
           message: msg
         });
-      });
-    } else {
-      chrome.tabs.sendMessage(t.id, {
-        message: msg
-      });
-      return;
-    }
+      }
+    });
   };
 
   simpleTokenizer = function(text) {

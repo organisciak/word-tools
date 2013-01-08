@@ -1,23 +1,25 @@
-window.initiated = false # Whether script has already been injected.
-
 getWordCount = (e, t, tokenizer=simpleTokenizer) -> 
-	text = e.selectionText
-	words = tokenizer text
-	if text.length is 0
-		msg = "No words selected"
-	else
-		msg = "#{ words } word#{if words>1 then 's' else ''} selected"
+	responses = 0
+	chrome.tabs.executeScript t.id, {
+        code: '''chrome.extension.sendMessage({ loaded: document.getElementById('word-count-porganized')!==null });'''
+    }
+	
+	# Listen for loading response
+	chrome.extension.onMessage.addListener (req, sender, sendResponse) =>
+		responses += 1
+		text = e.selectionText
+		words = tokenizer text
+		msg  = "#{ if text.length is 0 then 'No' else words } word#{if words isnt 1 then 's' else ''} selected"
 
-	# Only add file when script is run, but only add once.
-	if window.initiated is not true
-		chrome.tabs.executeScript t.id, {file:"dialog.js"}, (e) =>
-			window.initiated = true
+		if responses isnt 1
+			return
+		if req.loaded is false
+			chrome.tabs.executeScript t.id, {file:"dialog.js"}, () =>
+				chrome.tabs.sendMessage t.id, {message: msg}
+			return
+		else
 			chrome.tabs.sendMessage t.id, {message: msg}
 			return
-	else 
-		chrome.tabs.sendMessage t.id, {message: msg}
-		return
-		
 	return
                            
 simpleTokenizer = (text) -> text.split(" ").length
