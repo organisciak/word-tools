@@ -2,17 +2,35 @@
 (function() {
   var getWordCount, simpleTokenizer;
 
+  window.initiated = false;
+
   getWordCount = function(e, t, tokenizer) {
-    var text, words;
+    var msg, text, words,
+      _this = this;
     if (tokenizer == null) {
       tokenizer = simpleTokenizer;
     }
     text = e.selectionText;
     words = tokenizer(text);
     if (text.length === 0) {
-      return alert("No words selected");
+      msg = "No words selected";
     } else {
-      return alert("" + words + " word" + (words > 1 ? 's' : '') + " selected");
+      msg = "" + words + " word" + (words > 1 ? 's' : '') + " selected";
+    }
+    if (window.initiated === !true) {
+      chrome.tabs.executeScript(t.id, {
+        file: "dialog.js"
+      }, function(e) {
+        window.initiated = true;
+        chrome.tabs.sendMessage(t.id, {
+          message: msg
+        });
+      });
+    } else {
+      chrome.tabs.sendMessage(t.id, {
+        message: msg
+      });
+      return;
     }
   };
 
@@ -25,22 +43,5 @@
     "contexts": ["selection"],
     "onclick": getWordCount
   });
-
-  /*
-  <div style="
-      width: 200px;
-      position: fixed;
-      z-index: 10000;
-      background: rgba(10,10,10,0.6);
-      left: 50%;
-      top: 50%;
-      text-align: center;
-      padding: 10px;
-      border-radius: 10px;
-      color: white;
-      font-family: sans-serif;
-  ">123 Words Selected</div>
-  */
-
 
 }).call(this);
