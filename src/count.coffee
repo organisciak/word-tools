@@ -1,4 +1,4 @@
-getWordCount = (e, t, tokenizer=simpleTokenizer) -> 
+getWordCount = (e, t, tokenizer=regexTokenizer) -> 
 	responses = 0
 	chrome.tabs.executeScript t.id, {
         code: '''chrome.extension.sendMessage({ loaded: document.getElementById('word-count-porganized')!==null });'''
@@ -21,8 +21,7 @@ getWordCount = (e, t, tokenizer=simpleTokenizer) ->
 			chrome.tabs.sendMessage t.id, {message: msg}
 			return
 	return
-                           
-simpleTokenizer = (text) -> text.split(" ").length
+                            
 
 chrome.contextMenus.create
 	"title": "Word Count"
