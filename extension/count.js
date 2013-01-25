@@ -48,7 +48,7 @@
   };
 
   chrome.contextMenus.create({
-    "title": "Word Count",
+    "title": "Count words",
     "contexts": ["selection"],
     "onclick": getWordCount
   });

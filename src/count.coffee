@@ -24,6 +24,6 @@ getWordCount = (e, t, tokenizer=regexTokenizer) ->
                             
 
 chrome.contextMenus.create
-	"title": "Word Count"
+	"title": "Count words"
 	"contexts": ["selection"]
 	"onclick": getWordCount
