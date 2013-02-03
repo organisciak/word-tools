@@ -29,6 +29,7 @@ listens for sendMessage from elsewhere in the script.
     div.style.color = "white";
     div.style.fontFamily = "sans-serif";
     div.style.fontSize = "13pt";
+    div.style.textShadow = "0 1px 0 rgba(0, 0, 0, 0.9)";
     div.innerText = text;
     document.body.appendChild(div);
     x = document.createElement('div');
